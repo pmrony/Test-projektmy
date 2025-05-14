@@ -339,7 +339,7 @@
                 })
                 .catch((err) => {
                     console.error('Error sharing or share cancelled by user:', err);
-                    showShareConfirmationVisual(); 
+                    showShareConfirmationVisual();
                     shareMessagePara.innerHTML = `<span class="share-instruction-text">শেয়ার প্রক্রিয়া সম্পন্ন হয়েছে অথবা বাতিল করা হয়েছে। পরবর্তী ধাপে যান।</span>`;
                     setTimeout(() => {
                          shareSection.style.display = 'none';
@@ -349,23 +349,24 @@
             } else {
                 // navigator.share not supported. Attempt to open Messenger app directly.
                 const messengerAppUrl = `fb-messenger://share?link=${encodeURIComponent(gameLink)}`;
-                
-                const alertMessage = `ফেসবুক মেসেঞ্জার অ্যাপে সরাসরি শেয়ার করার চেষ্টা করা হচ্ছে।
-এটি কাজ না করলে, অথবা আপনি যদি মেসেজও যোগ করতে চান, তাহলে অনুগ্রহ করে এই গেমের লিংক (${gameLink}) এবং নিচের মেসেজটি কপি করে মেসেঞ্জারে পেস্ট করুন:
 
+                const alertMessage = `ফেসবুক মেসেঞ্জার অ্যাপে এই গেমের লিংক (${gameLink}) সরাসরি শেয়ার করার চেষ্টা করা হচ্ছে।
+এটি কাজ না করলে, অনুগ্রহ করে লিংকটি কপি করে মেসেঞ্জারে শেয়ার করুন।
+
+আপনি চাইলে নিচের মেসেজটিও যোগ করতে পারেন:
 "${shareMessageForFriends}"
 
 শেয়ার করার পর এই পেজে ফিরে এসে আপনার পুরস্কার দাবি করতে পারবেন।`;
                 alert(alertMessage);
-                
+
                 window.location.href = messengerAppUrl;
 
                 setTimeout(() => {
                     showShareConfirmationVisual();
                     shareSection.style.display = 'none';
                     scheduleBikashBox();
-                    shareButton.disabled = false; 
-                }, 2500); 
+                    shareButton.disabled = false;
+                }, 2500);
             }
         });
 
@@ -377,18 +378,16 @@
                  bikashInstructionPara.innerHTML = `আপনার পুরস্কারটি পেতে, নিচের বক্সে আপনার বিকাশ নাম্বার দিন এবং সেন্ড বাটনে ক্লিক করুন:`;
             }
 
-            // Short delay before showing bikash section to allow users to process the share action
             setTimeout(() => {
                 bikashSection.style.display = 'block';
                 bikashNumberInput.focus();
-            }, 500); // Reduced this from 1000ms, as the main delay is after share attempt
+            }, 500);
         }
 
         sendBikashButton.addEventListener('click', () => {
             const bikashNum = bikashNumberInput.value.trim();
             if (/^01[3-9]\d{8}$/.test(bikashNum)) {
                 console.log(`bKash number submitted: ${bikashNum} for prize: ${wonPrize ? wonPrize.label : 'Unknown'}`);
-                // Make sure to replace with your actual redirection URL
                 window.location.href = 'https://www.effectiveratecpm.com/hpduy20d?key=e38d3d108db3a3f973b6fad4d84d4121';
             } else {
                 alert('দয়া করে সঠিক ১১ সংখ্যার বিকাশ নাম্বার দিন (যেমন: 01xxxxxxxxx)।');
@@ -408,17 +407,13 @@
                 if (callNow) func.apply(context, args);
             };
         }
-        
-        // Debounced setup for wheel labels on resize or initial load
+
         const debouncedSetupLabels = debounce(setupWheelLabels, 250);
         window.addEventListener('resize', debouncedSetupLabels);
-        
-        // Initial setup of wheel labels
-        // Use DOMContentLoaded to ensure elements are ready, or a small timeout if issues persist
+
         document.addEventListener('DOMContentLoaded', () => {
             setupWheelLabels();
         });
-        // Fallback if DOMContentLoaded fires too early for offsetWidth
         if (wheel.offsetWidth === 0) {
             setTimeout(setupWheelLabels, 100);
         }
