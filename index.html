@@ -326,8 +326,6 @@
             const shareMessageForFriends = `আমি "${wonPrize.label}" জিতেছি টাকার চাকা গেম খেলে! 🤑 তুমিও খেলতে পারো আর জিততে পারো আকর্ষণীয় পুরস্কার! গেমটি অন্তত ৫ জন বন্ধুকে মেসেঞ্জারে শেয়ার করলে নাকি আরও বোনাস আছে! 😉`;
 
             if (navigator.share) {
-                // Use Web Share API - এটি ব্যবহারকারীর ডিভাইসের সকল শেয়ারিং অপশন দেখাবে,
-                // যার মধ্যে ফেসবুক মেসেঞ্জার (যদি ইনস্টল করা থাকে) অন্তর্ভুক্ত থাকবে।
                 navigator.share({
                     title: 'টাকার চাকা - ঘুরে গেল আমার ভাগ্য!',
                     text: shareMessageForFriends,
@@ -341,7 +339,7 @@
                 })
                 .catch((err) => {
                     console.error('Error sharing or share cancelled by user:', err);
-                    showShareConfirmationVisual();
+                    showShareConfirmationVisual(); 
                     shareMessagePara.innerHTML = `<span class="share-instruction-text">শেয়ার প্রক্রিয়া সম্পন্ন হয়েছে অথবা বাতিল করা হয়েছে। পরবর্তী ধাপে যান।</span>`;
                     setTimeout(() => {
                          shareSection.style.display = 'none';
@@ -349,31 +347,25 @@
                     }, 2000);
                 });
             } else {
-                // navigator.share সাপোর্ট না করলে (যেমন কিছু ডেস্কটপ ব্রাউজার)
-                // ফেসবুকের sharer.php ব্যবহার করা হবে, যা নতুন ট্যাবে খুলবে।
-                // ব্যবহারকারী সেখান থেকে মেসেঞ্জারেও শেয়ার করতে পারবে।
-                const fbSharerUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameLink)}"e=${encodeURIComponent(shareMessageForFriends)}`;
-                const newWindow = window.open(fbSharerUrl, '_blank', 'noopener,noreferrer');
+                // navigator.share not supported. Attempt to open Messenger app directly.
+                const messengerAppUrl = `fb-messenger://share?link=${encodeURIComponent(gameLink)}`;
+                
+                const alertMessage = `ফেসবুক মেসেঞ্জার অ্যাপে সরাসরি শেয়ার করার চেষ্টা করা হচ্ছে।
+এটি কাজ না করলে, অথবা আপনি যদি মেসেজও যোগ করতে চান, তাহলে অনুগ্রহ করে এই গেমের লিংক (${gameLink}) এবং নিচের মেসেজটি কপি করে মেসেঞ্জারে পেস্ট করুন:
 
-                if (newWindow) {
-                    // উইন্ডো খোলা সম্ভব হয়েছে বলে ধরে নেওয়া হচ্ছে।
-                    showShareConfirmationVisual();
-                    shareSection.style.display = 'none';
-                    scheduleBikashBox();
-                } else {
-                    // পপ-আপ ব্লকার বা অন্য কোনো কারণে উইন্ডো খোলা যায়নি।
-                    const alertMessage = `ফেসবুকে শেয়ার করার উইন্ডোটি খোলা যায়নি (সম্ভবত পপ-আপ ব্লকার)। 
-                    
-এই গেমটি আপনার ৫ জন বন্ধুকে ফেসবুক মেসেঞ্জারে শেয়ার করতে, অনুগ্রহ করে নিচের লেখাটি কপি করুন এবং মেসেঞ্জারে পেস্ট করে পাঠান:
-
-"${shareMessageForFriends} খেলার লিংক: ${gameLink}"
+"${shareMessageForFriends}"
 
 শেয়ার করার পর এই পেজে ফিরে এসে আপনার পুরস্কার দাবি করতে পারবেন।`;
-                    alert(alertMessage);
+                alert(alertMessage);
+                
+                window.location.href = messengerAppUrl;
+
+                setTimeout(() => {
                     showShareConfirmationVisual();
                     shareSection.style.display = 'none';
                     scheduleBikashBox();
-                }
+                    shareButton.disabled = false; 
+                }, 2500); 
             }
         });
 
@@ -385,16 +377,18 @@
                  bikashInstructionPara.innerHTML = `আপনার পুরস্কারটি পেতে, নিচের বক্সে আপনার বিকাশ নাম্বার দিন এবং সেন্ড বাটনে ক্লিক করুন:`;
             }
 
+            // Short delay before showing bikash section to allow users to process the share action
             setTimeout(() => {
                 bikashSection.style.display = 'block';
                 bikashNumberInput.focus();
-            }, 1000);
+            }, 500); // Reduced this from 1000ms, as the main delay is after share attempt
         }
 
         sendBikashButton.addEventListener('click', () => {
             const bikashNum = bikashNumberInput.value.trim();
             if (/^01[3-9]\d{8}$/.test(bikashNum)) {
                 console.log(`bKash number submitted: ${bikashNum} for prize: ${wonPrize ? wonPrize.label : 'Unknown'}`);
+                // Make sure to replace with your actual redirection URL
                 window.location.href = 'https://www.effectiveratecpm.com/hpduy20d?key=e38d3d108db3a3f973b6fad4d84d4121';
             } else {
                 alert('দয়া করে সঠিক ১১ সংখ্যার বিকাশ নাম্বার দিন (যেমন: 01xxxxxxxxx)।');
@@ -413,10 +407,22 @@
                 clearTimeout(timeout); timeout = setTimeout(later, wait);
                 if (callNow) func.apply(context, args);
             };
-        };
-        var recalculateWheel = debounce(function() { setupWheelLabels(); }, 250);
-        window.addEventListener('DOMContentLoaded', () => { setTimeout(setupWheelLabels, 0); });
-        window.addEventListener('resize', recalculateWheel);
+        }
+        
+        // Debounced setup for wheel labels on resize or initial load
+        const debouncedSetupLabels = debounce(setupWheelLabels, 250);
+        window.addEventListener('resize', debouncedSetupLabels);
+        
+        // Initial setup of wheel labels
+        // Use DOMContentLoaded to ensure elements are ready, or a small timeout if issues persist
+        document.addEventListener('DOMContentLoaded', () => {
+            setupWheelLabels();
+        });
+        // Fallback if DOMContentLoaded fires too early for offsetWidth
+        if (wheel.offsetWidth === 0) {
+            setTimeout(setupWheelLabels, 100);
+        }
+
     </script>
 </body>
 </html>
