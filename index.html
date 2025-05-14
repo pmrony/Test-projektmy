@@ -415,3 +415,17 @@
                 if (callNow) func.apply(context, args);
             };
         }
+
+        const debouncedSetupLabels = debounce(setupWheelLabels, 250);
+        window.addEventListener('resize', debouncedSetupLabels);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupWheelLabels();
+        });
+        if (wheel.offsetWidth === 0) {
+            setTimeout(setupWheelLabels, 100);
+        }
+
+    </script>
+</body>
+</html>
