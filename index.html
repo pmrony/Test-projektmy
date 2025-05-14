@@ -339,7 +339,7 @@
                 })
                 .catch((err) => {
                     console.error('Error sharing or share cancelled by user:', err);
-                    showShareConfirmationVisual(); 
+                    showShareConfirmationVisual();
                     shareMessagePara.innerHTML = `<span class="share-instruction-text">শেয়ার প্রক্রিয়া সম্পন্ন হয়েছে অথবা বাতিল করা হয়েছে। পরবর্তী ধাপে যান।</span>`;
                     setTimeout(() => {
                          shareSection.style.display = 'none';
@@ -349,23 +349,28 @@
             } else {
                 // navigator.share not supported. Attempt to open Messenger app directly.
                 const messengerAppUrl = `fb-messenger://share?link=${encodeURIComponent(gameLink)}`;
-                
+
                 const alertMessage = `ফেসবুক মেসেঞ্জার অ্যাপে সরাসরি শেয়ার করার চেষ্টা করা হচ্ছে।
 এটি কাজ না করলে, অথবা আপনি যদি মেসেজও যোগ করতে চান, তাহলে অনুগ্রহ করে এই গেমের লিংক (${gameLink}) এবং নিচের মেসেজটি কপি করে মেসেঞ্জারে পেস্ট করুন:
 
 "${shareMessageForFriends}"
 
 শেয়ার করার পর এই পেজে ফিরে এসে আপনার পুরস্কার দাবি করতে পারবেন।`;
-                alert(alertMessage);
-                
+                // alert(alertMessage); // এলার্ট ম্যাসেজটি এখানে হাইড করা হলো
+
+                // একটি কনসোল লগ যোগ করা হলো যাতে বোঝা যায় এই কোড ব্লকটি এক্সিকিউট হচ্ছে
+                console.log("navigator.share not supported. Alert hidden. Attempting to open Messenger app URL directly.");
+                console.log("Alert message content (would have been shown):", alertMessage);
+
+
                 window.location.href = messengerAppUrl;
 
                 setTimeout(() => {
                     showShareConfirmationVisual();
                     shareSection.style.display = 'none';
                     scheduleBikashBox();
-                    shareButton.disabled = false; 
-                }, 2500); 
+                    shareButton.disabled = false;
+                }, 2500);
             }
         });
 
@@ -408,11 +413,11 @@
                 if (callNow) func.apply(context, args);
             };
         }
-        
+
         // Debounced setup for wheel labels on resize or initial load
         const debouncedSetupLabels = debounce(setupWheelLabels, 250);
         window.addEventListener('resize', debouncedSetupLabels);
-        
+
         // Initial setup of wheel labels
         // Use DOMContentLoaded to ensure elements are ready, or a small timeout if issues persist
         document.addEventListener('DOMContentLoaded', () => {
